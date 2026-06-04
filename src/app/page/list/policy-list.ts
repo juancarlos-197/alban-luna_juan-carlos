@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PolicyService, Policy } from '../../service/policy.service';
+import { PolicyService } from '../../service/policy.service';
+import { Policy } from '../../models/policy.model';
 
 @Component({
   selector: 'policy-list',
@@ -13,7 +14,7 @@ import { PolicyService, Policy } from '../../service/policy.service';
       <div *ngIf="loading()" class="status">Cargando pólizas...</div>
       <div *ngIf="error()" class="status error">{{ error() }}</div>
 
-      <table *ngIf="!loading() && policies().length > 0" class="policy-table">
+      <table  class="policy-table">
         <thead>
           <tr>
             <th>Cliente</th>

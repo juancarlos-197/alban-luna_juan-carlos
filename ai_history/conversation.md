@@ -1,3 +1,10 @@
+---
+Project: Alban Luna - Frontend/Backend
+Repo: alban-luna_juan-carlos
+Created: 2026-06-04
+Maintainer: Juan
+---
+
 # Historial de la conversación con la IA
 
 ## Resumen
