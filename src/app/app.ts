@@ -1,12 +1,10 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
+import { Page } from './page/page';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.css'
+  standalone: true,
+  imports: [Page],
+  template: '<app-page></app-page>'
 })
-export class App {
-  protected readonly title = signal('web-prueba-fronted-backend');
-}
+export class App {}
