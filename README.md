@@ -92,3 +92,9 @@ Lo que conviene mejorar a continuación:
 - La API usa datos en memoria, por lo que los cambios no sobreviven al reinicio del servidor.
 - El backend tiene datos iniciales de ejemplo para clientes y pólizas.
 - El enfoque actual es funcionalidad y estabilidad de flujo, no una solución completa de seguros.
+- Un MVP (Producto Mínimo Viable) en software es la versión más funcional y sencilla de una aplicación o producto digital que permite lanzarlo al mercado con el mínimo esfuerzo y coste. Su objetivo principal no es vender, sino validar una idea de negocio y recopilar "aprendizaje validado" de usuarios reales para mejorar el producto.
+
+## Conclusión
+
+La solución propuesta es un MVP enfocado en lo esencial: evitar fugas de clientes por vencimientos olvidados y tener un control mínimo de gestión de pólizas. Los futuros pasos serían agregar persistencia, autenticación y más vistas de gestión/servicios.
+<video src="ruta-de-tu-video.mp4" controls="controls" muted="muted" style="max-width: 100%;"></video>
