@@ -1,4 +1,10 @@
-# Code Review
+# 03_code_review
+
+Fecha: 2026-06-04
+
+Contenido del `code_review.md` generado durante la sesión (revisión y análisis profundo):
+
+---
 
 ## 1. Revisión general
 
@@ -46,8 +52,9 @@ He seleccionado dos problemas relevantes y de impacto real para producción. Cad
 
 ---
 
-Problema 1 — Falta de manejo de errores en llamadas `fetch`
-- Ubicación: funciones `getExpiringPolicies`, `markManaged`, `renewPolicy` en [src/app/service/policy.service.ts](src/app/service/policy.service.ts#L1-L200).
+**Problema 1 — Falta de manejo de errores en llamadas `fetch`**
+
+- Ubicación: funciones `getExpiringPolicies`, `markManaged`, `renewPolicy` en `src/app/service/policy.service.ts`.
 - Qué está mal: el código asume que `fetch()` siempre resuelve correctamente y llama `response.json()` sin comprobar `response.ok` ni envolver en `try/catch`. No hay timeouts, ni manejo de códigos de error HTTP (4xx/5xx).
 - Por qué importa (impacto técnico): si la red falla, el servidor responde 500, o la respuesta no es JSON válido, el `await response.json()` lanzará una excepción no manejada que puede propagarse como un rechazo de promesa no capturado. Además, sin timeout las solicitudes pueden bloquear la UI por tiempo indefinido.
 - Qué comportamiento de negocio se rompe:
@@ -80,8 +87,9 @@ try {
 
 ---
 
-Problema 2 — Manejo inconsistente de fechas y tipos (expiryDate)
-- Ubicación: `parsePolicy` y uso de `expiryDate` en [src/app/service/policy.service.ts](src/app/service/policy.service.ts#L1-L200) y consumo en frontend/backend (ver [backend/server.cjs](backend/server.cjs#L1-L120)).
+**Problema 2 — Manejo inconsistente de fechas y tipos (expiryDate)**
+
+- Ubicación: `parsePolicy` y uso de `expiryDate` en `src/app/service/policy.service.ts` y consumo en frontend/backend (ver `backend/server.cjs`).
 - Qué está mal: se convierte `expiryDate` a `Date` con `new Date(raw.expiryDate)` y, si no existe, se usa `new Date(NaN)`. No hay validación\nessperada del formato ni consideración de zonas horarias. Además, el backend originalmente trabaja con `expiryDate` como string `YYYY-MM-DD`, y la serialización/parseo puede introducir desplazamientos de fecha por zona horaria.
 - Por qué importa (impacto técnico): `new Date('YYYY-MM-DD')` es interpretado por JS como UTC midnight en algunos motores o como local en otros, lo que puede cambiar el día dependiendo de la zona. Un `Date` inválido (`NaN`) propagado puede romper ordenamientos, filtros por mes, comparaciones y la UI al formatearlo.
 - Qué comportamiento de negocio se rompe:
@@ -97,5 +105,4 @@ Problema 2 — Manejo inconsistente de fechas y tipos (expiryDate)
 
 ---
 
-Resumen ejecutivo: priorizar solución del problema 1 (manejador de errores y timeouts) para evitar fallos visibles y pérdida de datos; después robustecer el contrato y manejo de fechas (problema 2) para evitar discrepancias en la lógica de negocio y comunicaciones.
-
+**Resumen ejecutivo:** priorizar solución del problema 1 (manejador de errores y timeouts) para evitar fallos visibles y pérdida de datos; después robustecer el contrato y manejo de fechas (problema 2) para evitar discrepancias en la lógica de negocio y comunicaciones.
