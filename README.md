@@ -97,4 +97,10 @@ Lo que conviene mejorar a continuación:
 ## Conclusión
 
 La solución propuesta es un MVP enfocado en lo esencial: evitar fugas de clientes por vencimientos olvidados y tener un control mínimo de gestión de pólizas. Los futuros pasos serían agregar persistencia, autenticación y más vistas de gestión/servicios.
-<video src="ruta-de-tu-video.mp4" controls="controls" muted="muted" style="max-width: 100%;"></video>
+ 
+<p align="center">
+  <video controls="controls" muted="muted" style="max-width: 20%; height: auto">
+    <source src="conclusion.mp4" type="video/mp4">
+    Tu navegador no soporta la etiqueta video.
+  </video>
+</p>
