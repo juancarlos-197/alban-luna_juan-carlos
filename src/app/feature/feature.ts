@@ -4,15 +4,16 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { Observable } from 'rxjs';
 import type { User } from '@angular/fire/auth';
 import { AuthService } from '../service/auth.service';
+import { Menu } from '../shared/menu/menu';
 
 @Component({
-  selector: 'app-page',
+  selector: 'app-feature',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterOutlet],
-  templateUrl: './page.html',
-  styleUrls: ['./page.css']
+  imports: [CommonModule, RouterOutlet, Menu],
+  templateUrl: './feature.html',
+  styleUrls: ['./feature.css']
 })
-export class Page {
+export class Feature {
   protected readonly title = signal('Reportes');
   public currentUser$!: Observable<User | null>;
 

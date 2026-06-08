@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { PolicyList } from './page/list/policy-list';
-import { Login } from './page/login/login';
+import { PolicyList } from './feature/list/policy-list';
+import { Login } from './feature/login/login';
 import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [

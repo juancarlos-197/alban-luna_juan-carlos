@@ -1,0 +1,13 @@
+<app-menu
+  [currentUser$]="currentUser$"
+  (logout)="logout()"
+></app-menu>
+
+<header>
+  <h1>{{ title() }}</h1>
+  <p class="subtitle">Control de pólizas a vencer y seguimiento de clientes gestionados.</p>
+</header>
+
+<main>
+  <router-outlet />
+</main>
