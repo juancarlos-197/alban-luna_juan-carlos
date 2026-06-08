@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const { authMiddleware } = require('./auth.middleware.cjs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -42,16 +43,26 @@ const addOneYear = (dateString) => {
   return date.toISOString().slice(0, 10);
 };
 
+// Rutas públicas
 app.get('/api/clients', (req, res) => {
   res.json(clients);
 });
 
-app.get('/api/policies', (req, res) => {
+// Rutas protegidas (requieren token de autenticación)
+app.get('/api/policies', authMiddleware, (req, res) => {
   const dueMonth = String(req.query.dueMonth || new Date().toISOString().slice(0, 7));
   res.json(getExpiringPolicies(dueMonth));
 });
 
-app.post('/api/policies/:id/manage', (req, res) => {
+app.get('/api/policies/:id', authMiddleware, (req, res) => {
+  const policy = policies.find((item) => item.id === req.params.id);
+  if (!policy) {
+    return res.status(404).json({ error: 'Póliza no encontrada' });
+  }
+  res.json(serializePolicy(policy));
+});
+
+app.post('/api/policies/:id/manage', authMiddleware, (req, res) => {
   const policy = policies.find((item) => item.id === req.params.id);
   if (!policy) {
     return res.status(404).json({ error: 'Póliza no encontrada' });
@@ -65,7 +76,7 @@ app.post('/api/policies/:id/manage', (req, res) => {
   res.json(serializePolicy(policy));
 });
 
-app.post('/api/policies/:id/renew', (req, res) => {
+app.post('/api/policies/:id/renew', authMiddleware, (req, res) => {
   const policy = policies.find((item) => item.id === req.params.id);
   if (!policy) {
     return res.status(404).json({ error: 'Póliza no encontrada' });
@@ -77,14 +88,6 @@ app.post('/api/policies/:id/renew', (req, res) => {
     policy.note = String(req.body.note);
   }
 
-  res.json(serializePolicy(policy));
-});
-
-app.get('/api/policies/:id', (req, res) => {
-  const policy = policies.find((item) => item.id === req.params.id);
-  if (!policy) {
-    return res.status(404).json({ error: 'Póliza no encontrada' });
-  }
   res.json(serializePolicy(policy));
 });
 

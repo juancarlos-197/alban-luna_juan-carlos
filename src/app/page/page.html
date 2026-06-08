@@ -1,5 +1,13 @@
 <nav>
-  <a routerLink="/expiring">Pólizas a vencer</a>
+  <div class="nav-left">
+    <a routerLink="/expiring">Pólizas a vencer</a>
+  </div>
+  <div class="nav-right">
+    <span *ngIf="currentUser$ | async as user" class="user-info">
+      {{ user.email }}
+    </span>
+    <button (click)="logout()" class="btn-logout">Cerrar Sesión</button>
+  </div>
 </nav>
 
 <header>

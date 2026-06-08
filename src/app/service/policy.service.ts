@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Policy } from '../models/policy.model';
+import { AuthService } from './auth.service';
 
 const parsePolicy = (raw: any): Policy => ({
   id: String(raw?.id ?? ''),
@@ -19,31 +20,76 @@ const parsePolicy = (raw: any): Policy => ({
 export class PolicyService {
   private readonly baseUrl = '/api';
 
+  constructor(private authService: AuthService) {}
+
+  private async getHeaders(): Promise<HeadersInit> {
+    const token = await this.authService.getAuthToken();
+    return {
+      'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    };
+  }
+
   async getExpiringPolicies(dueMonth: string): Promise<Policy[]> {
-    const response = await fetch(`${this.baseUrl}/policies?dueMonth=${dueMonth}`);
-    const data = await response.json();
-    if (!Array.isArray(data)) return [];
-    return data.map(parsePolicy);
+    try {
+      const headers = await this.getHeaders();
+      const response = await fetch(`${this.baseUrl}/policies?dueMonth=${dueMonth}`, {
+        headers
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      if (!Array.isArray(data)) return [];
+      return data.map(parsePolicy);
+    } catch (error) {
+      console.error('Error fetching policies:', error);
+      throw error;
+    }
   }
 
   async markManaged(id: string): Promise<Policy> {
-    const response = await fetch(`${this.baseUrl}/policies/${id}/manage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({})
-    });
-    const data = await response.json();
-    return parsePolicy(data);
+    try {
+      const headers = await this.getHeaders();
+      const response = await fetch(`${this.baseUrl}/policies/${id}/manage`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({})
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      return parsePolicy(data);
+    } catch (error) {
+      console.error('Error marking policy as managed:', error);
+      throw error;
+    }
   }
 
   async renewPolicy(id: string, newExpiryDate: string): Promise<Policy> {
-    const response = await fetch(`${this.baseUrl}/policies/${id}/renew`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ newExpiryDate })
-    });
-    const data = await response.json();
-    return parsePolicy(data);
+    try {
+      const headers = await this.getHeaders();
+      const response = await fetch(`${this.baseUrl}/policies/${id}/renew`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ newExpiryDate })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      return parsePolicy(data);
+    } catch (error) {
+      console.error('Error renewing policy:', error);
+      throw error;
+    }
   }
 }
 
