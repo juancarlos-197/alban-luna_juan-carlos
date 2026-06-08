@@ -43,6 +43,7 @@ http://localhost:4200/
 - `src/app`: frontend Angular standalone con rutas y estructura básica.
 - `proxy.conf.json`: proxy para `ng serve` hacia el backend.
 - `package.json`: scripts para frontend, backend y pruebas.
+- `ai_history/`: Historial de tu conversación con la IA (obligatorio).
 
 ## Decisiones y enfoque
 
@@ -94,6 +95,36 @@ Lo que conviene mejorar a continuación:
 - El enfoque actual es funcionalidad y estabilidad de flujo, no una solución completa de seguros.
 - Un MVP (Producto Mínimo Viable) en software es la versión más funcional y sencilla de una aplicación o producto digital que permite lanzarlo al mercado con el mínimo esfuerzo y coste. Su objetivo principal no es vender, sino validar una idea de negocio y recopilar "aprendizaje validado" de usuarios reales para mejorar el producto.
 
+## Notas de desarrollo
+
+- Reiniciar el servidor TypeScript/Angular Language Service en VSCode si ves errores de importación o tipado tras mover archivos:
+
+  1. Abrir la paleta de comandos (`Ctrl+Shift+P`).
+  2. Ejecutar `TypeScript: Restart TS server`.
+  3. Si el problema persiste, ejecutar `Developer: Reload Window` en la paleta.
+
+- Comandos útiles para desarrollo local:
+
+```bash
+npm install
+npm run backend        # inicia backend en http://localhost:3000
+npm start              # inicia frontend Angular en http://localhost:4200
+```
+
+- Ejecutar pruebas:
+
+```bash
+npm test               # pruebas frontend
+npm run test:backend   # pruebas backend
+```
+
+## Cambios recientes (rápida bitácora)
+
+- Corregido error de importación en `src/app/page/login/login.ts` (ruta relativa ajustada a `../../service/auth.service`).
+- Evitado error de inicialización en `src/app/page/page.ts` moviendo la asignación de `currentUser$` al constructor y tipándolo como `Observable<User | null>`.
+
+Estos cambios son menores y buscan eliminar errores de compilación y mejorar la claridad del tipado.
+ 
 ## Conclusión
 
 La solución propuesta es un MVP enfocado en lo esencial: evitar fugas de clientes por vencimientos olvidados y tener un control mínimo de gestión de pólizas. Los futuros pasos serían agregar persistencia, autenticación y más vistas de gestión/servicios.
@@ -104,3 +135,5 @@ La solución propuesta es un MVP enfocado en lo esencial: evitar fugas de client
     Tu navegador no soporta la etiqueta video.
   </video>
 </p>
+
+

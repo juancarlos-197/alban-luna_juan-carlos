@@ -18,6 +18,9 @@ Esta carpeta contiene el historial de la interacción entre el usuario y la IA p
 3. El usuario solicitó crear `code_review.md` con una revisión del snippet actual.
 4. Se creó `code_review.md` con observaciones sobre `app.ts`, `app.html`, `app.routes.ts` y `package.json`.
 5. El usuario pidió la creación de `ai_history/` para documentar la interacción.
+6. Se actualizó `spec.md` con un análisis específico del problema de `AuthService`, supuestos, decisiones y recomendaciones.
+7. Se corrigieron errores de importación y de inicialización en `src/app/page/login/login.ts` y `src/app/page/page.ts`.
+8. Se actualizó `README.md` añadiendo instrucciones de ejecución, decisiones, reflexión y registro de `ai_history/`.
 
 ## Archivos generados
 

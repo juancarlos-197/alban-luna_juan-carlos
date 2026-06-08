@@ -97,6 +97,45 @@ Justificación: la prioridad es validar el flujo central de seguimiento de venci
 - No incluir autenticación reduce el tiempo de implementación, pero el sistema no es seguro para uso real en producción.
 - Optar por Angular standalone reduce complejidad de módulos y aprovecha la arquitectura moderna del proyecto.
 
+## Análisis del problema actual (importación y uso de `AuthService`)
+
+### Problema
+
+- El compilador/reportes de TypeScript señalaba: "No se encuentra el módulo '../service/auth.service' ni sus declaraciones de tipos correspondientes" en `src/app/page/login/login.ts`.
+- Además, en `src/app/page/page.ts` aparecía el error: "La propiedad \"authService\" se usa antes de su inicialización." debido a la inicialización directa de una propiedad con `this.authService`.
+
+### Causa raíz
+
+- Ruta relativa incorrecta desde `login.ts` hacia el servicio. El archivo real está en `src/app/service/auth.service.ts`, por lo que la importación debe ser `../../service/auth.service` desde `src/app/page/login/`.
+- Uso de la propiedad `authService` en el inicializador de clase en `Page` provocaba el acceso antes de que Angular inyecte la dependencia (inicialización de campos ocurre antes del constructor).
+
+### Cambios realizados
+
+1. Corregí la importación en `src/app/page/login/login.ts`:
+  - De `import { AuthService } from '../service/auth.service';` a `import { AuthService } from '../../service/auth.service';`
+2. En `src/app/page/page.ts` removí la asignación directa y la declaré así:
+  - `public currentUser$!: Observable<User | null>;`
+  - Asigné `this.currentUser$ = this.authService.currentUser$;` dentro del constructor para usar la dependencia ya inyectada.
+3. Añadí tipado explícito `User | null` para el observable, importando `User` de `@angular/fire/auth`.
+
+### Supuestos
+
+- Estructura del proyecto estándar: `src/app/service/auth.service.ts` es la ubicación correcta del servicio.
+- `AuthService` expone `currentUser$` como `Observable<User | null>`, `login`, `register` y `logout` como métodos Promise/async (confirmado por `auth.service.ts`).
+
+### Decisiones y justificantes
+
+- Usar la ruta relativa correcta es la solución más simple y robusta: evita cambiar la estructura de carpetas.
+- Mover la asignación al constructor garantiza que la inyección de dependencias ya esté disponible y elimina el error de inicialización.
+- Añadir tipos explícitos mejora la claridad y ayuda al compilador/IDE a detectar errores temprano.
+
+### Recomendaciones / Próximos pasos
+
+- Reiniciar el TypeScript/Angular Language Service o el servidor de desarrollo para que las correcciones de importación se reflejen en el IDE.
+- Ejecutar `npm run start` o el comando equivalente para verificar en tiempo de ejecución.
+- Ejecutar pruebas (`npm test`) si las hay para validar que no se rompa otra funcionalidad.
+- Considerar añadir una guía de estilo de importaciones (paths relativos vs. alias) para evitar errores similares en el futuro.
+
 ## Conclusión
 
 La solución propuesta es un MVP enfocado en lo esencial: evitar fugas de clientes por vencimientos olvidados y tener un control mínimo de gestión de pólizas. Los futuros pasos serían agregar persistencia, autenticación y más vistas de gestión/servicios.
