@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PolicyService } from '../service/policy.service';
-import { Policy } from '../../models/policy.model';
+import { Policy } from '../../core/interfaces/policy.interface';
 
 @Component({
   selector: 'policy-list',
