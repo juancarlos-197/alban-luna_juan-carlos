@@ -4,8 +4,8 @@ import { Feature } from './feature/feature';
   selector: 'app-root',
   standalone: true,
   imports: [Feature],
-  template: '<app-feature>'
-})
+ templateUrl: './app.html',
+  styleUrls: ['./app.css']})
 export class App {
 
 }
