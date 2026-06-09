@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Policy } from '../models/policy.model';
+import { Policy } from '../../models/policy.model';
 import { AuthService } from './auth.service';
 
 const parsePolicy = (raw: any): Policy => ({

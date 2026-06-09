@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { Observable } from 'rxjs';
 import type { User } from '@angular/fire/auth';
-import { AuthService } from '../service/auth.service';
+import { AuthService } from './service/auth.service';
 import { Toolbar } from '../shared/toolbar/toolbar';
 
 @Component({

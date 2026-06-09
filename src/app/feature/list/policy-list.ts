@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PolicyService } from '../../service/policy.service';
+import { PolicyService } from '../service/policy.service';
 import { Policy } from '../../models/policy.model';
 
 @Component({
