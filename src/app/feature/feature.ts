@@ -4,12 +4,12 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { Observable } from 'rxjs';
 import type { User } from '@angular/fire/auth';
 import { AuthService } from '../service/auth.service';
-import { Menu } from '../shared/menu/menu';
+import { Toolbar } from '../shared/toolbar/toolbar';
 
 @Component({
   selector: 'app-feature',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, Menu],
+  imports: [CommonModule, RouterOutlet, Toolbar],
   templateUrl: './feature.html',
   styleUrls: ['./feature.css']
 })

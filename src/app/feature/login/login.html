@@ -1,6 +1,8 @@
  <div class="login-container">
       <div class="login-box">
         <h1>Iniciar Sesión</h1>
+        <!--email: jalban.dacompsc@gmail.com -->
+
         <form *ngIf="!showRegister()" (ngSubmit)="onLogin()">
           <div class="form-group">
             <label for="email">Email:</label>
@@ -10,7 +12,7 @@
               [(ngModel)]="email" 
               name="email"
               required
-              placeholder="tu@email.com"
+              placeholder="jalban.dacompsc@gmail.com"
             />
           </div>
 
