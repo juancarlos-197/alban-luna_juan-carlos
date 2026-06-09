@@ -101,26 +101,26 @@ Justificación: la prioridad es validar el flujo central de seguimiento de venci
 
 ### Problema
 
-- El compilador/reportes de TypeScript señalaba: "No se encuentra el módulo '../service/auth.service' ni sus declaraciones de tipos correspondientes" en `src/app/page/login/login.ts`.
-- Además, en `src/app/page/page.ts` aparecía el error: "La propiedad \"authService\" se usa antes de su inicialización." debido a la inicialización directa de una propiedad con `this.authService`.
+- El compilador/reportes de TypeScript señalaban errores de importación en `src/app/feature/login/login.ts` cuando la ruta del servicio no coincidía con la estructura real del proyecto.
+- Además, en `src/app/feature/feature.ts` aparecía el error de inicialización de `authService` al asignar `currentUser$` durante la declaración de la clase en vez de esperar a la inyección del constructor.
 
 ### Causa raíz
 
-- Ruta relativa incorrecta desde `login.ts` hacia el servicio. El archivo real está en `src/app/service/auth.service.ts`, por lo que la importación debe ser `../../service/auth.service` desde `src/app/page/login/`.
-- Uso de la propiedad `authService` en el inicializador de clase en `Page` provocaba el acceso antes de que Angular inyecte la dependencia (inicialización de campos ocurre antes del constructor).
+- La ruta relativa debe apuntar al servicio real ubicado en `src/app/feature/service/auth.service.ts`. Desde `src/app/feature/login/login.ts`, la importación correcta es `../service/auth.service`.
+- El uso de `authService` en el inicializador de la clase `Feature` provocaba el acceso antes de que Angular inyectara la dependencia, porque los campos de clase se inicializan antes del constructor.
 
 ### Cambios realizados
 
-1. Corregí la importación en `src/app/page/login/login.ts`:
-  - De `import { AuthService } from '../service/auth.service';` a `import { AuthService } from '../../service/auth.service';`
-2. En `src/app/page/page.ts` removí la asignación directa y la declaré así:
+1. Corregí la importación en `src/app/feature/login/login.ts` para que apunte al servicio real en `src/app/feature/service/auth.service.ts`.
+  - La ruta correcta desde `src/app/feature/login/` es `import { AuthService } from '../service/auth.service';`.
+2. En `src/app/feature/feature.ts` removí la asignación directa y la declaré así:
   - `public currentUser$!: Observable<User | null>;`
   - Asigné `this.currentUser$ = this.authService.currentUser$;` dentro del constructor para usar la dependencia ya inyectada.
 3. Añadí tipado explícito `User | null` para el observable, importando `User` de `@angular/fire/auth`.
 
 ### Supuestos
 
-- Estructura del proyecto estándar: `src/app/service/auth.service.ts` es la ubicación correcta del servicio.
+- Estructura real del proyecto: `src/app/feature/service/auth.service.ts` es la ubicación correcta del servicio.
 - `AuthService` expone `currentUser$` como `Observable<User | null>`, `login`, `register` y `logout` como métodos Promise/async (confirmado por `auth.service.ts`).
 
 ### Decisiones y justificantes

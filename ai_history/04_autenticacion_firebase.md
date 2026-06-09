@@ -1,129 +1,50 @@
-# 04_autenticacion_firebase.md
+# 04_autenticacion_firebase
 
-Fecha: 2026-06-08
+Fecha: 2026-06-09
 
-## Resumen de Implementación de Autenticación con Firebase
+## Resumen de la implementación actual de autenticación
 
-Se ha completado la implementación de autenticación con Firebase en la aplicación. Aquí están los cambios realizados:
+En esta sesión se integró Firebase Authentication en la estructura real del proyecto y se corrigieron las rutas y referencias para que coincidieran con la organización actual del frontend.
 
-## 1. Instalación de Dependencias
+## 1. Estado real del proyecto
 
-- **firebase**: SDK de Firebase para JavaScript
-- **@angular/fire**: Bindings de Angular para Firebase
+### Frontend
+- `src/app/feature/service/auth.service.ts`: servicio centralizado con `login()`, `register()`, `logout()`, `currentUser$`, `isAuthenticated$` y `getAuthToken()`.
+- `src/app/core/guards/auth.guard.ts`: guard funcional que protege la ruta `/expiring` cuando no hay sesión activa.
+- `src/app/feature/login/login.ts`: componente standalone de login y registro con manejo de errores Firebase.
+- `src/app/feature/feature.ts`: vista principal que consume `currentUser$` y expone logout.
+- `src/app/feature/service/policy.service.ts`: servicio que añade el token Bearer a las peticiones del backend cuando existe una sesión.
 
-## 2. Cambios en Frontend
+### Backend
+- `backend/auth.middleware.cjs`: middleware básico que valida la presencia de un token Bearer en las peticiones protegidas.
+- `backend/server.cjs`: rutas `GET /api/policies`, `GET /api/policies/:id`, `POST /api/policies/:id/manage` y `POST /api/policies/:id/renew` protegidas por ese middleware.
 
-### a) `src/app/service/auth.service.ts` (CREADO)
-- Servicio centralizado de autenticación
-- Métodos: `login()`, `logout()`, `register()`
-- Observables: `currentUser$`, `isAuthenticated$`
-- Manejo de tokens con `getAuthToken()`
+## 2. Configuración Firebase actual
 
-### b) `src/app/guards/auth.guard.ts` (CREADO)
-- Guard de rutas para proteger páginas autenticadas
-- Redirige a login si no hay sesión activa
+- `src/app/app.config.ts` inicializa Firebase con una configuración hard-coded para el proyecto `prueba-front-back`.
+- La integración actual usa `provideFirebaseApp()` y `provideAuth()` de `@angular/fire`.
+- No se observa un archivo `.env` o un patrón de variables `NG_APP_FIREBASE_*` en la versión actual del repositorio; por tanto, la configuración está en el código de la app y debe revisarse si se quiere mover a variables de entorno.
 
-### c) `src/app/page/login/login.ts` (CREADO)
-- Componente standalone de login/registro
-- Formularios con validación básica
-- Manejo de errores específicos de Firebase
-- UI responsiva con estilos Tailwind-like
+## 3. Cambios importantes realizados
 
-### d) `src/app/app.config.ts` (ACTUALIZADO)
-- Configuración de Firebase con variables de entorno
-- Providers: `provideFirebaseApp()`, `provideAuth()`
-- Soporta variables: `NG_APP_FIREBASE_*`
+1. Se alinearon las rutas del login y la autenticación con la estructura real del proyecto (`src/app/feature/...`).
+2. Se corrigió el patrón de inicialización en `src/app/feature/feature.ts` para evitar acceso a `authService` antes de la inyección del constructor.
+3. Se mantuvo el flujo de login/registro con Firebase en el frontend y la protección de rutas con `authGuard`.
+4. Se añadió la lógica de token Bearer al servicio de pólizas para que el backend pueda validar la sesión.
 
-### e) `src/app/app.routes.ts` (ACTUALIZADO)
-- Ruta `/login` pública
-- Ruta `/expiring` protegida con `authGuard`
-- Redireccionamiento automático a login si no autenticado
+## 4. Limitaciones actuales
 
-### f) `src/app/page/page.ts` (ACTUALIZADO)
-- Inyectado `AuthService`
-- Método `logout()`
-- Muestra email del usuario autenticado
+- La autenticación del backend sigue siendo una validación básica de presencia del token, no una verificación real de Firebase Admin SDK.
+- La configuración de Firebase está actualmente fija en el código, lo que facilita el desarrollo local pero no es ideal para producción.
+- El flujo de autenticación funciona como MVP, pero aún no cubre validación profunda de tokens ni roles por usuario.
 
-### g) `src/app/page/page.html` (ACTUALIZADO)
-- Barra de navegación con usuario y botón logout
-- Info del usuario autenticado
+## 5. Próximos pasos recomendados
 
-### h) `src/app/page/page.css` (ACTUALIZADO)
-- Estilos para navegación mejorada
-- Botón logout con transiciones
-- Info del usuario
+1. Migrar la configuración de Firebase a variables de entorno o un archivo `.env.local` para evitar credenciales fijas en el repo.
+2. Sustituir la validación básica del token por verificación real con Firebase Admin SDK en `backend/auth.middleware.cjs`.
+3. Añadir pruebas de integración para login, logout y acceso a rutas protegidas.
+4. Mejorar la experiencia de usuario con mensajes más claros y manejo de errores específicos por código Firebase.
 
-### i) `src/app/service/policy.service.ts` (ACTUALIZADO)
-- Añadido token de autenticación a headers
-- Métodos incluyen `getHeaders()` con Bearer token
-- Mejor manejo de errores
+## 6. Conclusión
 
-## 3. Cambios en Backend
-
-### a) `backend/auth.middleware.cjs` (CREADO)
-- Middleware de autenticación básico
-- Valida presencia de token Bearer
-- En producción, verificar con Firebase Admin SDK
-
-### b) `backend/server.cjs` (ACTUALIZADO)
-- Importa middleware de autenticación
-- Rutas públicas: `/api/clients`
-- Rutas protegidas: `/api/policies`, `/api/policies/:id`, manage, renew
-- Todas las operaciones de pólizas requieren autenticación
-
-## 4. Configuración de Entorno
-
-### `.env.example` (CREADO)
-- Template con variables de configuración de Firebase
-- Variables necesarias:
-  - `NG_APP_FIREBASE_API_KEY`
-  - `NG_APP_FIREBASE_AUTH_DOMAIN`
-  - `NG_APP_FIREBASE_PROJECT_ID`
-  - `NG_APP_FIREBASE_STORAGE_BUCKET`
-  - `NG_APP_FIREBASE_MESSAGING_SENDER_ID`
-  - `NG_APP_FIREBASE_APP_ID`
-
-## 5. Próximos Pasos
-
-Para poner en funcionamiento:
-
-1. **Crear proyecto en Firebase Console**
-   - Ir a https://console.firebase.google.com
-   - Crear nuevo proyecto
-   - Habilitar autenticación por email/password
-
-2. **Copiar credenciales**
-   - Copiar `.env.example` a `.env.local`
-   - Reemplazar valores con las credenciales del proyecto
-
-3. **Backend con Firebase Admin SDK (Opcional)**
-   - Para producción, verificar tokens con Firebase Admin SDK
-   - Instalar: `npm install firebase-admin`
-   - Implementar validación real en `auth.middleware.cjs`
-
-4. **Testing**
-   - Ejecutar `npm start` para frontend
-   - Ejecutar `npm run backend` para backend
-   - Ir a http://localhost:4200
-   - Registrarse o login con test@example.com / password123
-
-## 6. Características
-
-✅ Autenticación con Firebase Authentication
-✅ Registro de nuevos usuarios
-✅ Login con email/password
-✅ Logout y sesión
-✅ Protección de rutas con guards
-✅ Token en headers de requests
-✅ Manejo de errores específicos
-✅ UI responsive para login
-✅ Middleware de autenticación en backend
-✅ Observables reactivos de estado
-
-## 7. Seguridad
-
-- Tokens JWT manejados por Firebase
-- Bearer tokens en headers de API
-- Middleware básico en backend (mejorable con Admin SDK)
-- Contraseñas validadas en cliente (6+ caracteres)
-- Redireccionamiento automático sin autenticación
+La implementación actual proporciona una base funcional de autenticación con Firebase para el MVP: registro, login, sesión, logout y protección de rutas. El siguiente salto natural es reforzar la seguridad del backend y mover la configuración a un entorno más seguro y reusable.

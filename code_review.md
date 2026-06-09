@@ -40,15 +40,15 @@ El snippet de `backend/server.cjs` muestra una API Express clara y sencilla para
 
 El backend es un buen punto de partida para un MVP de seguimiento de pólizas. El código es claro, la API es consistente y sólo falta robustecer la lógica de fechas y la validación para producción.
 
-## 7. Análisis profundo: `src/app/service/policy.service.ts`
+## 7. Análisis profundo: `src/app/feature/service/policy.service.ts` y `backend/server.cjs`
 
-He seleccionado dos problemas relevantes y de impacto real para producción. Cada problema incluye: ubicación (función/archivo), qué está mal, por qué importa, impacto en usuarios y cómo arreglarlo.
+He seleccionado dos problemas relevantes en la implementación actual del MVP. Cada punto destaca la ubicación real, el impacto técnico y el riesgo de negocio para el flujo de pólizas.
 
 ---
 
 Problema 1 — Falta de manejo de errores en llamadas `fetch`
-- Ubicación: funciones `getExpiringPolicies`, `markManaged`, `renewPolicy` en [src/app/service/policy.service.ts](src/app/service/policy.service.ts#L1-L200).
-- Qué está mal: el código asume que `fetch()` siempre resuelve correctamente y llama `response.json()` sin comprobar `response.ok` ni envolver en `try/catch`. No hay timeouts, ni manejo de códigos de error HTTP (4xx/5xx).
+- Ubicación: funciones `getExpiringPolicies`, `markManaged`, `renewPolicy` en [src/app/feature/service/policy.service.ts](src/app/feature/service/policy.service.ts).
+- Qué está mal: aunque el servicio comprueba `response.ok`, el error que se lanza es muy genérico (`Error: ${response.statusText}`), no incluye el cuerpo de la respuesta y no usa `AbortController` ni timeout. Esto hace que el frontend no tenga contexto suficiente para mostrar un mensaje útil al usuario y que las llamadas puedan quedar colgadas si el backend tarda demasiado.
 - Por qué importa (impacto técnico): si la red falla, el servidor responde 500, o la respuesta no es JSON válido, el `await response.json()` lanzará una excepción no manejada que puede propagarse como un rechazo de promesa no capturado. Además, sin timeout las solicitudes pueden bloquear la UI por tiempo indefinido.
 - Qué comportamiento de negocio se rompe:
   - María (usuario final) podría ver la lista de pólizas vacía o la aplicación congelada en lugar de un mensaje claro; podría intentar renovar o marcar y la acción parecería no ejecutarse.
@@ -81,8 +81,8 @@ try {
 ---
 
 Problema 2 — Manejo inconsistente de fechas y tipos (expiryDate)
-- Ubicación: `parsePolicy` y uso de `expiryDate` en [src/app/service/policy.service.ts](src/app/service/policy.service.ts#L1-L200) y consumo en frontend/backend (ver [backend/server.cjs](backend/server.cjs#L1-L120)).
-- Qué está mal: se convierte `expiryDate` a `Date` con `new Date(raw.expiryDate)` y, si no existe, se usa `new Date(NaN)`. No hay validación\nessperada del formato ni consideración de zonas horarias. Además, el backend originalmente trabaja con `expiryDate` como string `YYYY-MM-DD`, y la serialización/parseo puede introducir desplazamientos de fecha por zona horaria.
+- Ubicación: `parsePolicy` en [src/app/feature/service/policy.service.ts](src/app/feature/service/policy.service.ts) y el modelo de respuesta del backend en [backend/server.cjs](backend/server.cjs).
+- Qué está mal: el frontend convierte `expiryDate` a `Date`, pero el backend devuelve `expiryDate` como string `YYYY-MM-DD`. Esa diferencia de tipo puede provocar comparaciones y filtros incorrectos si la fecha se interpreta en zona horaria distinta. Además, cuando la fecha no llega, el código usa `new Date(NaN)`, lo que genera un `Date` inválido que puede romper ordenamientos y renderizados.
 - Por qué importa (impacto técnico): `new Date('YYYY-MM-DD')` es interpretado por JS como UTC midnight en algunos motores o como local en otros, lo que puede cambiar el día dependiendo de la zona. Un `Date` inválido (`NaN`) propagado puede romper ordenamientos, filtros por mes, comparaciones y la UI al formatearlo.
 - Qué comportamiento de negocio se rompe:
   - María podría ver pólizas que supuestamente vencen en un mes distinto (orden incorrecto), lo que afecta la priorización de gestión.
@@ -97,5 +97,5 @@ Problema 2 — Manejo inconsistente de fechas y tipos (expiryDate)
 
 ---
 
-Resumen ejecutivo: priorizar solución del problema 1 (manejador de errores y timeouts) para evitar fallos visibles y pérdida de datos; después robustecer el contrato y manejo de fechas (problema 2) para evitar discrepancias en la lógica de negocio y comunicaciones.
+Resumen ejecutivo: priorizar la mejora de errores y timeouts en el servicio para que el usuario reciba feedback real y la app no quede bloqueada; después corregir el contrato de fechas entre frontend y backend para evitar errores de negocio en renovaciones y alertas de vencimiento.
 

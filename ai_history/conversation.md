@@ -21,12 +21,14 @@ Esta carpeta contiene el historial de la interacción entre el usuario y la IA p
 6. Se actualizó `spec.md` con un análisis específico del problema de `AuthService`, supuestos, decisiones y recomendaciones.
 7. Se corrigieron errores de importación y de inicialización en `src/app/page/login/login.ts` y `src/app/page/page.ts`.
 8. Se actualizó `README.md` añadiendo instrucciones de ejecución, decisiones, reflexión y registro de `ai_history/`.
+9. Se añadió una síntesis del código actual en `src/` en `ai_history/05_codigo_fuente.md`.
 
 ## Archivos generados
 
 - `spec.md`
 - `code_review.md`
 - `ai_history/conversation.md`
+- `ai_history/05_codigo_fuente.md`
 
 ## Notas
 

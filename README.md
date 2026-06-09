@@ -1,6 +1,11 @@
-# WebPruebaFrontedBackend
+# WebPruebaFrontendBackend
 
 Aplicación de ejemplo que combina un frontend Angular con una API REST ligera en Express para el seguimiento de pólizas de seguros.
+
+## Requisitos
+
+- Node.js 18 o superior
+- npm 9 o superior
 
 ## Cómo correrlo
 
@@ -39,11 +44,12 @@ http://localhost:4200/
 
 ## Qué incluye hoy
 
-- `backend/server.cjs`: API REST Express con almacenamiento en memoria.
-- `src/app`: frontend Angular standalone con rutas y estructura básica.
-- `proxy.conf.json`: proxy para `ng serve` hacia el backend.
+- `backend/server.cjs`: API REST Express con almacenamiento en memoria para clientes y pólizas.
+- `src/app/feature/`: frontend Angular standalone con vistas de login, listado y servicio de pólizas.
+- `src/app/shared/toolbar/`: componente reutilizable para navegación y acciones de la UI.
+- `proxy.conf.json`: proxy local para que `ng serve` reenvíe `/api` al backend.
 - `package.json`: scripts para frontend, backend y pruebas.
-- `ai_history/`: Historial de tu conversación con la IA (obligatorio).
+- `ai_history/`: historial de desarrollo y decisiones del proyecto.
 
 ## Decisiones y enfoque
 
@@ -79,14 +85,14 @@ http://localhost:4200/
 
 ## Reflexión
 
-El proyecto actual es un MVP técnico. Ya provee la base para un flujo de gestión de pólizas, pero aún falta completar la interfaz de usuario y conectar el frontend con las acciones del backend.
+Este proyecto cumple la función de MVP técnico: valida el flujo de seguimiento de vencimientos sin sobreconstruir infraestructura. La idea central es reemplazar el proceso manual en Excel con una herramienta simple, rápida de ejecutar y fácil de extender.
 
 Lo que conviene mejorar a continuación:
 
-- agregar componentes y vistas reales para listar y gestionar pólizas,
-- implementar persistencia con base de datos para no perder datos al reiniciar,
-- añadir validaciones y manejo de errores en el frontend,
-- incorporar autenticación si se usa en producción.
+- completar la vista de listado y acciones de gestión en el frontend,
+- añadir persistencia real para que los cambios sobrevivan reinicios,
+- robustecer validaciones, manejo de errores y feedback de usuario,
+- incorporar autenticación y roles si el sistema se usa en producción.
 
 ## Observaciones
 
@@ -120,8 +126,8 @@ npm run test:backend   # pruebas backend
 
 ## Cambios recientes (rápida bitácora)
 
-- Corregido error de importación en `src/app/page/login/login.ts` (ruta relativa ajustada a `../../service/auth.service`).
-- Evitado error de inicialización en `src/app/page/page.ts` moviendo la asignación de `currentUser$` al constructor y tipándolo como `Observable<User | null>`.
+- Corregido el uso del servicio de autenticación en `src/app/feature/login/login.ts` y `src/app/feature/feature.ts`, alineando las rutas reales con la estructura actual del proyecto.
+- Evitado error de inicialización en `src/app/feature/feature.ts` moviendo la asignación de `currentUser$` al constructor y tipándolo como `Observable<User | null>`.
 
 Estos cambios son menores y buscan eliminar errores de compilación y mejorar la claridad del tipado.
  
