@@ -1,7 +1,13 @@
 import { Routes } from '@angular/router';
-import { PolicyList } from './page/list/policy-list';
+import { PolicyList } from './feature/list/policy-list';
+import { Login } from './feature/login/login';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
+  {
+    path: 'login',
+    component: Login
+  },
   {
     path: '',
     pathMatch: 'full',
@@ -9,6 +15,7 @@ export const routes: Routes = [
   },
   {
     path: 'expiring',
-    component: PolicyList
+    component: PolicyList,
+    canActivate: [authGuard]
   }
 ];

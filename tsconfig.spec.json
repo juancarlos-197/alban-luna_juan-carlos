@@ -4,9 +4,13 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
+    "rootDir": "./src",
     "types": [
       "vitest/globals"
-    ]
+    ],
+    "module": "es2022",
+    "target": "ES2022",
+    "moduleResolution": "bundler"
   },
   "include": [
     "src/**/*.d.ts",

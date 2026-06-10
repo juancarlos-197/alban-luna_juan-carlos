@@ -1,0 +1,29 @@
+<mat-toolbar color="primary" class="mat-toolbar-large">
+  <button matIconButton class="example-icon" aria-label="Example icon-button with menu icon">
+    <mat-icon class="icon-large">menu</mat-icon>
+  </button>
+  <span class="app-title">PRUEBA TECNICA AGENTEMOTOR</span>
+
+  
+  <span class="example-spacer"></span>
+
+  <button matIconButton class="example-icon" aria-label="Example icon-button with share icon">
+    <mat-icon class="icon-large">share</mat-icon>
+  </button>
+</mat-toolbar>
+
+
+
+
+<header class="toolbar">
+  <div class="toolbar-left">
+    <a routerLink="/expiring" class="toolbar-link">Pólizas a vencer</a>
+  </div>
+
+  <div class="toolbar-right" *ngIf="currentUser$ | async as user">
+    <span class="toolbar-user">{{ user.email }}</span>
+    <button type="button" class="toolbar-button" (click)="handleLogout()">Cerrar Sesión</button>
+  </div>
+
+  
+</header>
